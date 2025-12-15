@@ -68,4 +68,7 @@ public class Patient extends Person {
 
     }
 
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
 }

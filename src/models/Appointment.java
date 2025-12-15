@@ -57,4 +57,11 @@ public class Appointment {
 
     }
 
+    public String getAppointmentId() {
+        return appointmentId;
+    }
+
+    public void setStatus(String setTo) {
+        status = setTo;
+    }
 }

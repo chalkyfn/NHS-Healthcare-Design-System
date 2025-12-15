@@ -18,7 +18,7 @@ public class Clinician extends Person {
     }
 
 
-    public String getClinicianID(){
+    public String getClinicianId(){
         return clinicianID;
     }
 

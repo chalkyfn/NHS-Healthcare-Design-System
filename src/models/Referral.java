@@ -36,4 +36,51 @@ public class Referral {
     }
 
 
+    public LocalDate getReferralDate() {
+        return referralDate;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public Facility getReferringFacility() {
+        return referringFacility;
+    }
+
+    public Person getReferringClinician() {
+        return referringClinician;
+    }
+
+    public Person getReferredToClinician() {
+        return referringToClinician;
+    }
+
+    public Facility getReferredToFacility() {
+        return referringToFacility;
+    }
+
+    public String getUrgencyLevel() {
+        return urgencyLevel;
+    }
+
+    public String getClinicalSummary() {
+        return clinicalSummary;
+    }
+
+    public String getReferralReason() {
+        return referralReason;
+    }
+
+    public String[] getRequestedInvestigations() {
+        return requestedInvestigation;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
 }

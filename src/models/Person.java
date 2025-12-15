@@ -39,4 +39,8 @@ public class Person {
     public String getPhoneNumber() {
         return phoneNumber;
     }
+
+    public String getRole() {
+        return getRole();
+    }
 }

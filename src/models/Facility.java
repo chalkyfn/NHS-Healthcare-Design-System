@@ -31,11 +31,17 @@ public class Facility {
         this.specialitiesOffered = specialities;
     }
 
-    public String getFacilityID(){
+    public String getFacilityId(){
         return facilityID;
     }
 
     public String toString(){
         return facilityName + "(" + facilityType + ")";
     }
+
+    public String getFacilityName() {
+        return getFacilityName();
+    }
+
+
 }
