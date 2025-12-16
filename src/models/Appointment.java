@@ -64,4 +64,8 @@ public class Appointment {
     public void setStatus(String setTo) {
         status = setTo;
     }
+
+    public String getStatus() {
+        return status;
+    }
 }

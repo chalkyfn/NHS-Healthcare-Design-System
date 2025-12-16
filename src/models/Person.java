@@ -15,6 +15,12 @@ public class Person {
     protected String address;
     protected String postCode;
 
+    public Person(String personId, String firstName, String lastName) {
+        this.personId = personId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     public String getFullName(){
         return firstName + " " + lastName;
     }

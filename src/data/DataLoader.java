@@ -162,12 +162,11 @@ public class DataLoader {
 
     private static Clinician findClinician(List<Clinician> clinicians, String id) {
         return clinicians.stream()
+                .filter(c -> c.getClinicianId() != null)
                 .filter(c -> c.getClinicianId().equals(id))
                 .findFirst()
                 .orElse(null);
     }
-
-
 
     // ----------------------------------------------
     // LOAD APPOINTMENTS

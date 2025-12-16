@@ -1,13 +1,10 @@
 package controller;
 
-import models.Referral;
-import models.Patient;
-import models.Clinician;
-import models.Facility;
-
+import models.*;
 import service.ReferralManager;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class ReferralController {
 
@@ -27,7 +24,8 @@ public class ReferralController {
             String urgency,
             String reason,
             String clinicalSummary,
-            String investigations) {
+            List<String> investigations
+    ) {
 
         Referral referral = new Referral(
                 referralId,
@@ -42,10 +40,10 @@ public class ReferralController {
                 clinicalSummary,
                 investigations,
                 "New",
-                null,
                 "",
                 LocalDate.now(),
-                LocalDate.now()
+                LocalDate.now(),
+                null   // appointment not created yet
         );
 
         referralManager.processReferral(referral);

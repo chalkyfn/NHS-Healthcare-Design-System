@@ -1,5 +1,7 @@
 package models;
 
+import java.util.List;
+
 public class Facility {
 
     private String facilityID;
@@ -12,12 +14,12 @@ public class Facility {
     private String address;
     private String postCode;
     private String managerName;
-    private String[] specialitiesOffered;
+    private List<String> specialitiesOffered;
 
     public Facility(String id, String name, String type, String address,
                     String postcode, String phone, String email,
                     String openingHours, String managerName,
-                    int capacity, String[] specialities) {
+                    int capacity, List<String> specialities) {
         this.facilityID = id;
         this.facilityName = name;
         this.facilityType = type;

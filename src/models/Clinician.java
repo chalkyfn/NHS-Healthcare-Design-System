@@ -1,15 +1,16 @@
 package models;
 
-public class Clinician extends Person {
+public abstract class Clinician extends Person {
 
     private String clinicianID;
     private String role;
     private String qualification;
     private Facility facillity;
 
-    public Clinician(String id, String firstName, String lastName,
+    public Clinician(String clinicianID, String firstName, String lastName,
                      String role, String qualification, Facility facility){
-        this.personId = id;
+        super(clinicianID,firstName,lastName);
+        this.clinicianID = clinicianID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
