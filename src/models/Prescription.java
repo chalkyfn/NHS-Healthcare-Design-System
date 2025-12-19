@@ -74,8 +74,6 @@ public class Prescription {
         return issueDate;
     }
 
-    // ---------------- LOGIC ----------------
-
     public void updateStatus(String newStatus) {
         this.status = newStatus;
     }

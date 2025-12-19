@@ -1,16 +1,16 @@
 package controller;
 
+import data.DataSaver;
 import models.Prescription;
 import models.Patient;
 import models.Clinician;
-import data.DataSaver;
 
 import java.time.LocalDate;
 
 public class PrescriptionController {
 
     public Prescription createPrescription(
-            String id,
+            String prescriptionId,
             Patient patient,
             Clinician clinician,
             String medication,
@@ -18,8 +18,8 @@ public class PrescriptionController {
             String instructions,
             String pharmacy) {
 
-        Prescription prescription = new Prescription(
-                id,
+        return new Prescription(
+                prescriptionId,
                 patient,
                 clinician,
                 medication,
@@ -29,8 +29,21 @@ public class PrescriptionController {
                 "Issued",
                 LocalDate.now()
         );
+    }
 
-        DataSaver.savePrescriptionText(prescription,"data/prescription.txt");
-        return prescription;
+
+    // SAVE PRESCRIPTION AS TEXT FILE
+
+    public void generatePrescriptionFile(
+            Prescription prescription,
+            String folderPath) {
+
+        DataSaver.savePrescriptionText(prescription, folderPath);
+    }
+
+
+    // UPDATE PRESCRIPTION STATUS
+    public void updateStatus(Prescription prescription, String newStatus) {
+        prescription.updateStatus(newStatus);
     }
 }

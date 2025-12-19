@@ -58,9 +58,7 @@ public class DataLoader {
 
 
 
-    // ----------------------------------------------
-    // LOAD PATIENTS
-    // ----------------------------------------------
+    //Load Patients
     public static List<Patient> loadPatients(String path, List<Facility> facilities) {
 
         List<Patient> patients = new ArrayList<>();
@@ -74,7 +72,7 @@ public class DataLoader {
 
                 String[] p = CSVUtils.split(line);
 
-                Facility registeredFacility = findFacility(facilities, CSVUtils.clean(p[13]));
+                    Facility registeredFacility = findFacility(facilities, CSVUtils.clean(p[13]));
 
                 Patient patient = new Patient(
                         CSVUtils.clean(p[0]),
@@ -104,9 +102,7 @@ public class DataLoader {
     }
 
 
-    // ----------------------------------------------
-    // LOAD CLINICIANS
-    // ----------------------------------------------
+    //Load Clinicians
     public static List<Clinician> loadClinicians(String path, List<Facility> facilities) {
 
         List<Clinician> clinicians = new ArrayList<>();
@@ -271,5 +267,52 @@ public class DataLoader {
                 .findFirst()
                 .orElse(null);
     }
+
+    private static Prescription findPrescription(List<Prescription> list, String id) {
+        return list.stream()
+                .filter(p -> p.getPrescriptionId().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
+
+// LOAD PRESCRIPTIONS
+public static List<Prescription> loadPrescriptions(
+        String path,
+        List<Patient> patients,
+        List<Clinician> clinicians) {
+
+    List<Prescription> prescriptions = new ArrayList<>();
+
+    try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+
+        br.readLine(); // skip header
+        String line;
+
+        while ((line = br.readLine()) != null) {
+
+            String[] p = CSVUtils.split(line);
+
+            Prescription prescription = new Prescription(
+                    CSVUtils.clean(p[0]),
+                    findPatient(patients, CSVUtils.clean(p[1])),
+                    findClinician(clinicians, CSVUtils.clean(p[2])),
+                    CSVUtils.clean(p[3]),
+                    CSVUtils.clean(p[4]),
+                    CSVUtils.clean(p[5]),
+                    CSVUtils.clean(p[6]),
+                    CSVUtils.parseDate(p[7])
+            );
+
+            prescriptions.add(prescription);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return prescriptions;
+}
+
 
 }

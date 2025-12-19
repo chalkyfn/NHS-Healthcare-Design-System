@@ -3,7 +3,8 @@ package data;
 import models.Prescription;
 import models.Referral;
 
-import java.io.*;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -13,7 +14,7 @@ public class DataSaver {
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     // -----------------------------------------------------
-    // SAVE A REFERRAL AS A TEXT FILE
+    // SAVE REFERRAL AS TEXT FILE
     // -----------------------------------------------------
     public static void saveReferralText(Referral referral, String folderPath) {
 
@@ -22,31 +23,31 @@ public class DataSaver {
         try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
 
             writer.println("==========================================");
-            writer.println("        NHS REFERRAL SUMMARY");
+            writer.println("           NHS REFERRAL SUMMARY");
             writer.println("==========================================");
             writer.println("Referral ID: " + referral.getReferralId());
-            writer.println("Date Created: " + referral.getReferralDate());
+            writer.println("Referral Date: " + referral.getReferralDate());
             writer.println();
 
             writer.println("---- PATIENT DETAILS ----");
             writer.println("Name: " + referral.getPatient().getFullName());
             writer.println("NHS Number: " + referral.getPatient().getNhsNumber());
-            writer.println("DOB: " + referral.getPatient().getDateOfBirth());
-            writer.println("Registered GP: " +
-                    (referral.getReferringFacility() != null
-                            ? referral.getReferringFacility().getFacilityName()
-                            : "Unknown"));
+            writer.println("Date of Birth: " + referral.getPatient().getDateOfBirth());
             writer.println();
 
             writer.println("---- REFERRING CLINICIAN ----");
             writer.println("Clinician: " + referral.getReferringClinician().getFullName());
             writer.println("Role: " + referral.getReferringClinician().getRole());
+            writer.println("Facility: " +
+                    (referral.getReferringFacility() != null
+                            ? referral.getReferringFacility().getFacilityName()
+                            : "Unknown"));
             writer.println();
 
             writer.println("---- REFERRED TO ----");
             writer.println("Specialist: " + referral.getReferredToClinician().getFullName());
-            writer.println("Hospital/Facility: " + referral.getReferredToFacility().getFacilityName());
-            writer.println("Urgency Level: " + referral.getUrgencyLevel());
+            writer.println("Facility: " + referral.getReferredToFacility().getFacilityName());
+            writer.println("Urgency: " + referral.getUrgencyLevel());
             writer.println();
 
             writer.println("---- CLINICAL SUMMARY ----");
@@ -58,8 +59,8 @@ public class DataSaver {
             writer.println();
 
             writer.println("---- REQUESTED INVESTIGATIONS ----");
-            for (String test : referral.getRequestedInvestigations()) {
-                writer.println("- " + test);
+            for (String investigation : referral.getRequestedInvestigations()) {
+                writer.println("- " + investigation);
             }
             writer.println();
 
@@ -72,14 +73,11 @@ public class DataSaver {
             writer.println("Generated: " + TIMESTAMP.format(LocalDateTime.now()));
             writer.println("------------------------------------------");
 
-            System.out.println("Referral saved to: " + fileName);
-
         } catch (Exception e) {
-            System.out.println("Error saving referral file.");
+            System.out.println("Error saving referral text file.");
             e.printStackTrace();
         }
     }
-
 
     // -----------------------------------------------------
     // SAVE PRESCRIPTION AS TEXT FILE
@@ -91,10 +89,10 @@ public class DataSaver {
         try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
 
             writer.println("==========================================");
-            writer.println("         PRESCRIPTION SUMMARY");
+            writer.println("           PRESCRIPTION SUMMARY");
             writer.println("==========================================");
             writer.println("Prescription ID: " + prescription.getPrescriptionId());
-            writer.println("Issued: " + prescription.getIssueDate());
+            writer.println("Issue Date: " + prescription.getIssueDate());
             writer.println();
 
             writer.println("---- PATIENT DETAILS ----");
@@ -108,24 +106,21 @@ public class DataSaver {
             writer.println();
 
             writer.println("---- MEDICATION ----");
-            writer.println("Drug: " + prescription.getMedicationName());
+            writer.println("Medication: " + prescription.getMedicationName());
             writer.println("Dosage: " + prescription.getDosage());
-            writer.println("Instructions: " + prescription.getInstructions());
             writer.println();
 
-            writer.println("---- COLLECTION ----");
+            writer.println("---- COLLECTION DETAILS ----");
             writer.println("Pharmacy: " + prescription.getPharmacyName());
-            writer.println("Collection Status: " + prescription.getStatus());
+            writer.println("Status: " + prescription.getStatus());
             writer.println();
 
             writer.println("------------------------------------------");
             writer.println("Generated: " + TIMESTAMP.format(LocalDateTime.now()));
             writer.println("------------------------------------------");
 
-            System.out.println("Prescription saved to: " + fileName);
-
         } catch (Exception e) {
-            System.out.println("Error saving prescription file.");
+            System.out.println("Error saving prescription text file.");
             e.printStackTrace();
         }
     }

@@ -5,33 +5,48 @@ import java.time.LocalDate;
 public class Patient extends Person {
 
     private String nhsNumber;
+    private LocalDate dateOfBirth;
+    private String gender;
+    private String phone;
+    private String email;
+    private String address;
     private String emergencyContactName;
-    private String getEmergencyContactNumber;
+    private String emergencyContactPhone;
     private LocalDate registrationDate;
     private Facility registeredFacility;
 
+    public Patient(
+            String patientId,
+            String firstName,
+            String lastName,
+            LocalDate dateOfBirth,
+            String gender,
+            String phone,
+            String email,
+            String address,
+            String emergencyContactName,
+            String emergencyContactPhone,
+            String nhsNumber,
+            String postcode,
+            LocalDate registrationDate,
+            Facility registeredFacility
+    ) {
 
-    public Patient(String patientId, String firstName, String lastName,
-                   LocalDate dob, String nhsNumber, String gender,
-                   String phone, String email, String address, String postcode,
-                   String emergencyContactName, String getEmergencyContactNumber,
-                   LocalDate registrationDate, Facility facility) {
+        super(patientId, firstName, lastName);
 
-        this.personId = patientId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.dateOfBirth = dob;
+        this.dateOfBirth = dateOfBirth;
         this.gender = gender;
-        this.nhsNumber = nhsNumber;
-        this.phoneNumber = phone;
+        this.phone = phone;
         this.email = email;
         this.address = address;
-        this.postCode = postcode;
         this.emergencyContactName = emergencyContactName;
-        this.getEmergencyContactNumber = getEmergencyContactNumber;
+        this.emergencyContactPhone = emergencyContactPhone;
+        this.nhsNumber = nhsNumber;
         this.registrationDate = registrationDate;
-        this.registeredFacility = facility;
+        this.registeredFacility = registeredFacility;
     }
+
+
 
     public String toString() {
         return getFullName() + " (" + nhsNumber + ")";
@@ -48,7 +63,7 @@ public class Patient extends Person {
     public void updateInfo(String patientId, String firstName, String lastName,
                            LocalDate dob, String nhsNumber, String gender,
                            String phone, String email, String address, String postcode,
-                           String emergencyContactName, String getEmergencyContactNumber,
+                           String emergencyContactName, String emergencyContactNumber,
                            LocalDate registrationDate, Facility facility){
 
         this.personId = patientId;
@@ -62,7 +77,7 @@ public class Patient extends Person {
         this.address = address;
         this.postCode = postcode;
         this.emergencyContactName = emergencyContactName;
-        this.getEmergencyContactNumber = getEmergencyContactNumber;
+        this.emergencyContactPhone = emergencyContactNumber;
         this.registrationDate = registrationDate;
         this.registeredFacility = facility;
 
