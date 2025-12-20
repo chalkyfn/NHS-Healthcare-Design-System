@@ -1,48 +1,28 @@
 package controller;
 
+import data.DataLoader;
 import data.DataSaver;
-import models.Prescription;
-import models.Patient;
-import models.Clinician;
+import models.*;
 
-import java.time.LocalDate;
+import java.util.List;
 
 public class PrescriptionController {
 
-    public Prescription createPrescription(
-            String prescriptionId,
-            Patient patient,
-            Clinician clinician,
-            String medication,
-            String dosage,
-            String instructions,
-            String pharmacy) {
-
-        return new Prescription(
-                prescriptionId,
-                patient,
-                clinician,
-                medication,
-                dosage,
-                instructions,
-                pharmacy,
-                "Issued",
-                LocalDate.now()
-        );
+    public List<Prescription> getAllPrescriptions(
+            String filePath,
+            List<Patient> patients,
+            List<Clinician> clinicians
+    ) {
+        return DataLoader.loadPrescriptions(filePath, patients, clinicians);
     }
-
-
-    // SAVE PRESCRIPTION AS TEXT FILE
 
     public void generatePrescriptionFile(
             Prescription prescription,
-            String folderPath) {
-
+            String folderPath
+    ) {
         DataSaver.savePrescriptionText(prescription, folderPath);
     }
 
-
-    // UPDATE PRESCRIPTION STATUS
     public void updateStatus(Prescription prescription, String newStatus) {
         prescription.updateStatus(newStatus);
     }

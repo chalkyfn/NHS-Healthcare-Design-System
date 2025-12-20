@@ -26,4 +26,25 @@ public class CSVUtils {
     public static String[] split(String line) {
         return line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
     }
+
+    public static int parseIntSafe(String s) {
+        try {
+            return Integer.parseInt(s.trim());
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public static LocalDate parseDateSafe(String value) {
+        try {
+            if (value == null || value.isBlank()) {
+                return null;
+            }
+            return LocalDate.parse(value.trim());
+        } catch (Exception e) {
+            return null; // safe fallback
+        }
+    }
+
+
 }

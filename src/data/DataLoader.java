@@ -1,43 +1,43 @@
 package data;
 
-
 import models.*;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataLoader {
 
+    // =====================================================
+    // FACILITIES
+    // =====================================================
     public static List<Facility> loadFacilities(String path) {
 
         List<Facility> facilities = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
 
-            br.readLine(); // skip header
+            br.readLine(); // header
             String line;
 
             while ((line = br.readLine()) != null) {
-
                 String[] f = CSVUtils.split(line);
 
-                Facility facility = new Facility(
-                        CSVUtils.clean(f[0]),
-                        CSVUtils.clean(f[1]),
-                        CSVUtils.clean(f[2]),
-                        CSVUtils.clean(f[3]),
-                        CSVUtils.clean(f[4]),
-                        CSVUtils.clean(f[5]),
-                        CSVUtils.clean(f[6]),
-                        CSVUtils.clean(f[7]),
-                        CSVUtils.clean(f[8]),
-                        Integer.parseInt(CSVUtils.clean(f[9])),
+                facilities.add(new Facility(
+                        f[0],
+                        f[1],
+                        f[2],
+                        f[3],
+                        f[4],
+                        f[5],
+                        f[6],
+                        f[7],
+                        f[8],
+                        Integer.parseInt(f[9]),
                         CSVUtils.parseList(f[10])
-                );
-
-                facilities.add(facility);
+                ));
             }
 
         } catch (Exception e) {
@@ -47,19 +47,12 @@ public class DataLoader {
         return facilities;
     }
 
-
-    // 🔥 Helper to find a facility by ID
-    private static Facility findFacility(List<Facility> facilities, String id) {
-        return facilities.stream()
-                .filter(f -> f.getFacilityId().equals(id))
-                .findFirst()
-                .orElse(null);
-    }
-
-
-
-    //Load Patients
-    public static List<Patient> loadPatients(String path, List<Facility> facilities) {
+    // =====================================================
+    // PATIENTS
+    // =====================================================
+    public static List<Patient> loadPatients(
+            String path,
+            List<Facility> facilities) {
 
         List<Patient> patients = new ArrayList<>();
 
@@ -69,29 +62,26 @@ public class DataLoader {
             String line;
 
             while ((line = br.readLine()) != null) {
-
                 String[] p = CSVUtils.split(line);
 
-                    Facility registeredFacility = findFacility(facilities, CSVUtils.clean(p[13]));
+                Facility facility = findFacility(facilities, p[13]);
 
-                Patient patient = new Patient(
-                        CSVUtils.clean(p[0]),
-                        CSVUtils.clean(p[1]),
-                        CSVUtils.clean(p[2]),
+                patients.add(new Patient(
+                        p[0],
+                        p[1],
+                        p[2],
                         CSVUtils.parseDate(p[3]),
-                        CSVUtils.clean(p[5]),
-                        CSVUtils.clean(p[6]),
-                        CSVUtils.clean(p[7]),
-                        CSVUtils.clean(p[8]),
-                        CSVUtils.clean(p[9]),
-                        CSVUtils.clean(p[4]), // nhs number
-                        CSVUtils.clean(p[10]),
-                        CSVUtils.clean(p[11]),
+                        p[5],
+                        p[6],
+                        p[7],
+                        p[8],
+                        p[9],
+                        p[4],
+                        p[10],
+                        p[11],
                         CSVUtils.parseDate(p[12]),
-                        registeredFacility
-                );
-
-                patients.add(patient);
+                        facility
+                ));
             }
 
         } catch (Exception e) {
@@ -101,9 +91,12 @@ public class DataLoader {
         return patients;
     }
 
-
-    //Load Clinicians
-    public static List<Clinician> loadClinicians(String path, List<Facility> facilities) {
+    // =====================================================
+    // CLINICIANS
+    // =====================================================
+    public static List<Clinician> loadClinicians(
+            String path,
+            List<Facility> facilities) {
 
         List<Clinician> clinicians = new ArrayList<>();
 
@@ -113,28 +106,19 @@ public class DataLoader {
             String line;
 
             while ((line = br.readLine()) != null) {
-
                 String[] c = CSVUtils.split(line);
 
-                String id = CSVUtils.clean(c[0]);
-                String first = CSVUtils.clean(c[1]);
-                String last = CSVUtils.clean(c[2]);
-                String role = CSVUtils.clean(c[3]);
-                String qualification = CSVUtils.clean(c[4]);
-                Facility facility = findFacility(facilities, CSVUtils.clean(c[5]));
+                Facility facility = findFacility(facilities, c[5]);
 
                 Clinician clinician;
+                String role = c[3].toLowerCase();
 
-                switch (role.toLowerCase()) {
-                    case "gp":
-                        clinician = new GP(id, first, last, qualification, facility);
-                        break;
-                    case "nurse":
-                        clinician = new Nurse(id, first, last, qualification, facility);
-                        break;
-                    default:
-                        clinician = new SpecialistDoctor(id, first, last, qualification, facility);
-                        break;
+                if (role.equals("gp")) {
+                    clinician = new GP(c[0], c[1], c[2], c[4], facility);
+                } else if (role.equals("nurse")) {
+                    clinician = new Nurse(c[0], c[1], c[2], c[4], facility);
+                } else {
+                    clinician = new SpecialistDoctor(c[0], c[1], c[2], c[4], facility);
                 }
 
                 clinicians.add(clinician);
@@ -147,33 +131,16 @@ public class DataLoader {
         return clinicians;
     }
 
-
-    // 🔥 Helper to find patient/clinician for appointments/referrals
-    private static Patient findPatient(List<Patient> patients, String id) {
-        return patients.stream()
-                .filter(p -> p.getPersonId().equals(id))
-                .findFirst()
-                .orElse(null);
-    }
-
-    private static Clinician findClinician(List<Clinician> clinicians, String id) {
-        return clinicians.stream()
-                .filter(c -> c.getClinicianId() != null)
-                .filter(c -> c.getClinicianId().equals(id))
-                .findFirst()
-                .orElse(null);
-    }
-
-    // ----------------------------------------------
-    // LOAD APPOINTMENTS
-    // ----------------------------------------------
+    // =====================================================
+    // APPOINTMENTS
+    // =====================================================
     public static List<Appointment> loadAppointments(
             String path,
             List<Patient> patients,
             List<Clinician> clinicians,
             List<Facility> facilities) {
 
-        List<Appointment> list = new ArrayList<>();
+        List<Appointment> appointments = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
 
@@ -181,138 +148,135 @@ public class DataLoader {
             String line;
 
             while ((line = br.readLine()) != null) {
-
                 String[] a = CSVUtils.split(line);
 
-                Appointment appt = new Appointment(
-                        CSVUtils.clean(a[0]),
-                        findPatient(patients, CSVUtils.clean(a[1])),
-                        findClinician(clinicians, CSVUtils.clean(a[2])),
-                        findFacility(facilities, CSVUtils.clean(a[3])),
+                Patient patient = findPatient(patients, a[1]);
+                Clinician clinician = findClinician(clinicians, a[2]);
+                Facility facility = findFacility(facilities, a[3]);
+
+                if (patient == null || clinician == null) continue;
+
+                appointments.add(new Appointment(
+                        a[0],
+                        patient,
+                        clinician,
+                        facility,
                         CSVUtils.parseDate(a[4]),
                         CSVUtils.parseTime(a[5]),
-                        Integer.parseInt(CSVUtils.clean(a[6])),
-                        CSVUtils.clean(a[7]),
-                        CSVUtils.clean(a[8]),
-                        CSVUtils.clean(a[9]),
-                        CSVUtils.clean(a[10]),
+                        Integer.parseInt(a[6]),
+                        a[7],
+                        a[8],
+                        a[9],
+                        a[10],
                         CSVUtils.parseDate(a[11]),
                         CSVUtils.parseDate(a[12])
-                );
-
-                list.add(appt);
+                ));
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return list;
+        return appointments;
     }
 
-
-    // ----------------------------------------------
-    // LOAD REFERRALS
-    // ----------------------------------------------
-    public static List<Referral> loadReferrals(
-            String path,
+    // =====================================================
+    // PRESCRIPTIONS
+    // =====================================================
+    public static List<Prescription> loadPrescriptions(
+            String filePath,
             List<Patient> patients,
-            List<Clinician> clinicians,
-            List<Facility> facilities,
-            List<Appointment> appointments) {
+            List<Clinician> clinicians
+    ) {
 
-        List<Referral> list = new ArrayList<>();
+        List<Prescription> prescriptions = new ArrayList<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 
-            br.readLine();
-            String line;
+            String line = br.readLine(); // skip header
 
             while ((line = br.readLine()) != null) {
 
-                String[] r = CSVUtils.split(line);
+                String[] data = CSVUtils.split(line);
 
-                Referral referral = new Referral(
-                        CSVUtils.clean(r[0]),
-                        findPatient(patients, CSVUtils.clean(r[1])),
-                        findClinician(clinicians, CSVUtils.clean(r[2])),
-                        findClinician(clinicians, CSVUtils.clean(r[3])),
-                        findFacility(facilities, CSVUtils.clean(r[4])),
-                        findFacility(facilities, CSVUtils.clean(r[5])),
-                        CSVUtils.parseDate(r[6]),
-                        CSVUtils.clean(r[7]),
-                        CSVUtils.clean(r[8]),
-                        CSVUtils.clean(r[9]),
-                        CSVUtils.parseList(r[10]),
-                        CSVUtils.clean(r[11]),
-                        CSVUtils.clean(r[13]),
-                        CSVUtils.parseDate(r[14]),
-                        CSVUtils.parseDate(r[15]),
-                        findAppointment(appointments, CSVUtils.clean(r[12]))
-                );
+                String prescriptionId = data[0];
+                String patientId = data[1];
+                String clinicianId = data[2];
 
-                list.add(referral);
+                String medicationName = data[3];
+                String dosage = data[4];
+                String frequency = data[5];
+                String quantity = data[6];
+                String instructions = data[7];
+                String pharmacyName = data[8];
+                String status = data[9];
+
+                LocalDate issueDate = CSVUtils.parseDateSafe(data[10]);
+                LocalDate expiryDate = CSVUtils.parseDateSafe(data[11]);
+
+                Patient patient = patients.stream()
+                        .filter(p -> p.getPatientId().equals(patientId))
+                        .findFirst()
+                        .orElse(null);
+
+                Clinician clinician = clinicians.stream()
+                        .filter(c -> c.getClinicianId().equals(clinicianId))
+                        .findFirst()
+                        .orElse(null);
+
+                if (patient == null || clinician == null) {
+                    continue;
+                }
+
+                prescriptions.add(new Prescription(
+                        prescriptionId,
+                        patient,
+                        clinician,
+                        medicationName,
+                        dosage,
+                        instructions,
+                        quantity,
+                        frequency,
+                        pharmacyName,
+                        status,
+                        issueDate,
+                        expiryDate
+                ));
             }
 
         } catch (Exception e) {
+            System.out.println("Error loading prescriptions");
             e.printStackTrace();
         }
 
-        return list;
-    }
-
-    private static Appointment findAppointment(List<Appointment> list, String id) {
-        return list.stream()
-                .filter(a -> a.getAppointmentId().equals(id))
-                .findFirst()
-                .orElse(null);
-    }
-
-    private static Prescription findPrescription(List<Prescription> list, String id) {
-        return list.stream()
-                .filter(p -> p.getPrescriptionId().equals(id))
-                .findFirst()
-                .orElse(null);
+        return prescriptions;
     }
 
 
-// LOAD PRESCRIPTIONS
-public static List<Prescription> loadPrescriptions(
-        String path,
-        List<Patient> patients,
-        List<Clinician> clinicians) {
 
-    List<Prescription> prescriptions = new ArrayList<>();
 
-    try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-
-        br.readLine(); // skip header
-        String line;
-
-        while ((line = br.readLine()) != null) {
-
-            String[] p = CSVUtils.split(line);
-
-            Prescription prescription = new Prescription(
-                    CSVUtils.clean(p[0]),
-                    findPatient(patients, CSVUtils.clean(p[1])),
-                    findClinician(clinicians, CSVUtils.clean(p[2])),
-                    CSVUtils.clean(p[3]),
-                    CSVUtils.clean(p[4]),
-                    CSVUtils.clean(p[5]),
-                    CSVUtils.clean(p[6]),
-                    CSVUtils.parseDate(p[7])
-            );
-
-            prescriptions.add(prescription);
+    // =====================================================
+    // HELPERS (NULL SAFE)
+    // =====================================================
+    private static Patient findPatient(List<Patient> patients, String id) {
+        for (Patient p : patients) {
+            if (p.getPatientId().equals(id)) return p;
         }
-
-    } catch (Exception e) {
-        e.printStackTrace();
+        return null;
     }
 
-    return prescriptions;
-}
+    private static Clinician findClinician(List<Clinician> clinicians, String id) {
+        for (Clinician c : clinicians) {
+            if (c.getClinicianId() != null &&
+                    c.getClinicianId().equals(id)) return c;
+        }
+        return null;
+    }
 
-
+    private static Facility findFacility(List<Facility> facilities, String id) {
+        for (Facility f : facilities) {
+            if (f.getFacilityId().equals(id)) return f;
+        }
+        return null;
+    }
 }
