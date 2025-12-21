@@ -21,6 +21,17 @@ public class Person {
         this.lastName = lastName;
     }
 
+    public String getFirstName(){
+        return firstName;
+    }
+    public String getLastName(){
+        return lastName;
+    }
+
+    public String getGender(){
+        return gender;
+    }
+
     public String getFullName(){
         return firstName + " " + lastName;
     }
@@ -43,10 +54,12 @@ public class Person {
     }
 
     public String getPhoneNumber() {
+
         return phoneNumber;
     }
 
     public String getRole() {
+
         return getRole();
     }
 }

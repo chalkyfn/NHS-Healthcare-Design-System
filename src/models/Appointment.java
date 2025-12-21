@@ -60,6 +60,9 @@ public class Appointment {
     public String getAppointmentId() {
         return appointmentId;
     }
+    public String getPatientId(){
+        return patient.getPatientId();
+    }
 
     public void setStatus(String setTo) {
         status = setTo;
@@ -67,5 +70,43 @@ public class Appointment {
 
     public String getStatus() {
         return status;
+    }
+
+    public String getClinianId() {
+        return clinician.getClinicianId();
+    }
+
+    public String getFacilityId() {
+        return facility.getFacilityId();
+    }
+
+    public LocalDate getAppointmentDate() {
+        return  appointmentDate;
+    }
+
+    public LocalTime getAppointmentTime() {
+        return appointmentTime;
+    }
+
+    public int getDurationTime() {
+        return duration;
+    }
+
+    public String getAppointmentType() {
+        return appointmentType;
+    }
+
+    public String getReasonForVisit(){
+        return reasonForVisit;
+    }
+    public String getNotes(){
+        return notes;
+    }
+    public LocalDate getCreatedDate(){
+        return createdDate;
+    }
+
+    public  LocalDate getLastModified(){
+        return lastModified;
     }
 }

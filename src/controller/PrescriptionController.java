@@ -11,9 +11,10 @@ public class PrescriptionController {
     public List<Prescription> getAllPrescriptions(
             String filePath,
             List<Patient> patients,
-            List<Clinician> clinicians
+            List<Clinician> clinicians,
+            List<Appointment> appointments
     ) {
-        return DataLoader.loadPrescriptions(filePath, patients, clinicians);
+        return DataLoader.loadPrescriptions(filePath, patients, clinicians,appointments);
     }
 
     public void generatePrescriptionFile(
@@ -26,4 +27,7 @@ public class PrescriptionController {
     public void updateStatus(Prescription prescription, String newStatus) {
         prescription.updateStatus(newStatus);
     }
+
+
+
 }

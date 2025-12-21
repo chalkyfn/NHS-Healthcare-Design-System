@@ -71,13 +71,13 @@ public class DataLoader {
                         p[1],
                         p[2],
                         CSVUtils.parseDate(p[3]),
+                        p[10],
                         p[5],
-                        p[6],
                         p[7],
+                        p[8],
                         p[8],
                         p[9],
                         p[4],
-                        p[10],
                         p[11],
                         CSVUtils.parseDate(p[12]),
                         facility
@@ -186,7 +186,8 @@ public class DataLoader {
     public static List<Prescription> loadPrescriptions(
             String filePath,
             List<Patient> patients,
-            List<Clinician> clinicians
+            List<Clinician> clinicians,
+            List<Appointment> appointments
     ) {
 
         List<Prescription> prescriptions = new ArrayList<>();
@@ -199,20 +200,24 @@ public class DataLoader {
 
                 String[] data = CSVUtils.split(line);
 
+
+
                 String prescriptionId = data[0];
                 String patientId = data[1];
                 String clinicianId = data[2];
+                String appointmentId = data[3];
+                LocalDate prescription_date = CSVUtils.parseDateSafe(data[4]);
+                String medicationName = data[5];
+                String dosage = data[6];
+                String frequency = data[7];
+                int duration_days = CSVUtils.parseIntSafe(data[8]);
+                String quantity = data[9];
+                String instructions = data[10];
+                String pharmacyName = data[11];
+                String status = data[12];
 
-                String medicationName = data[3];
-                String dosage = data[4];
-                String frequency = data[5];
-                String quantity = data[6];
-                String instructions = data[7];
-                String pharmacyName = data[8];
-                String status = data[9];
+                LocalDate issueDate = CSVUtils.parseDateSafe(data[13]);
 
-                LocalDate issueDate = CSVUtils.parseDateSafe(data[10]);
-                LocalDate expiryDate = CSVUtils.parseDateSafe(data[11]);
 
                 Patient patient = patients.stream()
                         .filter(p -> p.getPatientId().equals(patientId))
@@ -224,23 +229,32 @@ public class DataLoader {
                         .findFirst()
                         .orElse(null);
 
+                Appointment appointment = appointments.stream()
+                        .filter(c -> c.getAppointmentId().equals(appointmentId))
+                        .findFirst()
+                        .orElse(null);
+
                 if (patient == null || clinician == null) {
                     continue;
                 }
+
 
                 prescriptions.add(new Prescription(
                         prescriptionId,
                         patient,
                         clinician,
+                        appointment,
+                        prescription_date,
                         medicationName,
                         dosage,
-                        instructions,
-                        quantity,
                         frequency,
+                        duration_days,
+                        quantity,
+                        instructions,
                         pharmacyName,
                         status,
-                        issueDate,
-                        expiryDate
+                        issueDate
+
                 ));
             }
 
@@ -279,4 +293,13 @@ public class DataLoader {
         }
         return null;
     }
+
+    private static Appointment findAppointment(List<Appointment> appointments, String id) {
+        for (Appointment a : appointments) {
+            if (a.getAppointmentId().equals(id)) return a;
+        }
+        return null;
+    }
+
+
 }

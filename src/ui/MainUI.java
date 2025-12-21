@@ -40,10 +40,15 @@ public class MainUI extends JFrame {
         JButton loadPatientsBtn = new JButton("Load Patients");
         JButton loadAppointmentsBtn = new JButton("Load Appointments");
         JButton loadPrescriptionsBtn = new JButton("Load Prescriptions");
+        JButton exportPrescriptionBtn = new JButton("Export First Prescription");
+
+
 
         buttonPanel.add(loadPatientsBtn);
         buttonPanel.add(loadAppointmentsBtn);
         buttonPanel.add(loadPrescriptionsBtn);
+        buttonPanel.add(exportPrescriptionBtn);
+
 
         add(buttonPanel, BorderLayout.NORTH);
 
@@ -56,6 +61,45 @@ public class MainUI extends JFrame {
         loadPatientsBtn.addActionListener(e -> loadPatients());
         loadAppointmentsBtn.addActionListener(e -> loadAppointments());
         loadPrescriptionsBtn.addActionListener(e -> loadPrescriptions());
+        exportPrescriptionBtn.addActionListener(e -> {
+
+// Load shared data once
+            List<Facility> facilities =
+                    DataLoader.loadFacilities("data/facilities.csv");
+
+            List<Patient> patients =
+                    DataLoader.loadPatients("data/patients.csv", facilities);
+
+            List<Clinician> clinicians =
+                    DataLoader.loadClinicians("data/clinicians.csv", facilities);
+
+            List<Appointment> appointments =
+                    DataLoader.loadAppointments(
+                            "data/appointments.csv",
+                            patients,
+                            clinicians,
+                            facilities
+                    );
+
+// Now load prescriptions
+            List<Prescription> prescriptions =
+                    prescriptionController.getAllPrescriptions(
+                            "data/prescriptions.csv",
+                            patients,
+                            clinicians,
+                            appointments
+                    );
+
+
+            if (!prescriptions.isEmpty()) {
+                prescriptionController.generatePrescriptionFile(
+                        prescriptions.get(0),
+                        "output"
+                );
+                outputArea.append("\nPrescription file generated.\n");
+            }
+        });
+
     }
 
     // --------------------------------------------------
@@ -64,11 +108,34 @@ public class MainUI extends JFrame {
     private void loadPatients() {
         outputArea.setText("");
         List<Patient> patients = patientController.getAllPatients();
-
+        outputArea.append("Patient ID   -   " +
+                "Full Name   -   " +
+                "Date of Birth   -   " +
+                "NHS Number   -   " +
+                "Gender   -   " +
+                "Phone Number   -   " +
+                "Email   -   " +
+                "Address   -   " +
+                "Post Code   -   " +
+                "Emergency Contact   -   " +
+                "Emergency Phone   -   " +
+                "Registration Date\n");
         for (Patient p : patients) {
             outputArea.append(
-                    p.getPatientId() + " - " +
-                            p.getFullName() + "\n"
+                    p.getPatientId() + "   -   " +
+                            p.getFullName() + "   -   " +
+                            p.getDateOfBirth() + "   -   " +
+                            p.getNhsNumber() + "   -   " +
+                            p.getGender() + "   -   " +
+                            p.getPhoneNumber() + "   -   " +
+                            p.getEmail() + "   -   " +
+                            p.getAddress() + "   -   " +
+                            p.getPostCode() + "   -   " +
+                            p.getEmergencyContactName() + "   -   "+
+                            p.getEmergencyContactPhone() + "   -   " +
+                            p.getRegistrationDate() + "\n"
+
+
             );
         }
     }
@@ -79,10 +146,34 @@ public class MainUI extends JFrame {
     private void loadAppointments() {
         outputArea.setText("");
         List<Appointment> appointments = appointmentController.getAllAppointments();
-
+        outputArea.append("Appointment ID   -   " +
+                "Patient ID -   " +
+                "Clinician ID   -   " +
+                "Facility ID  -   " +
+                "Appointment Date  -   " +
+                "Duration Minutes  -   " +
+                "Appointment Type  -   " +
+                "Status  -   " +
+                "Notes   -   " +
+                "Created Date  -   " +
+                "Last Date Modified  -   "  + "\n");
         for (Appointment a : appointments) {
             outputArea.append(
                     a.getAppointmentId() + " - " +
+                            a.getPatientId() + " - " +
+                            a.getAppointmentId() + " - " +
+                            a.getClinianId() + " - " +
+                            a.getFacilityId() + " - " +
+                            a.getAppointmentDate() + " - " +
+                            a.getAppointmentDate() + " - " +
+                            a.getAppointmentTime() + " - " +
+                            a.getDurationTime() + " - " +
+                            a.getAppointmentType() + " - " +
+                            a.getStatus() + " - " +
+                            a.getReasonForVisit() + " - " +
+                            a.getNotes()+ " - " +
+                            a.getCreatedDate() + " - " +
+                            a.getLastModified() + " - " +
                             a.getStatus() + "\n"
             );
         }
@@ -104,21 +195,45 @@ public class MainUI extends JFrame {
         List<Clinician> clinicians =
                 DataLoader.loadClinicians("data/clinicians.csv", facilities);
 
+        List<Appointment> appointments =
+                DataLoader.loadAppointments("data/appointments.csv", patients,
+                        clinicians,
+                        facilities);
+
+
         List<Prescription> prescriptions =
                 prescriptionController.getAllPrescriptions(
                         "data/prescriptions.csv",
                         patients,
-                        clinicians
+                        clinicians,
+                        appointments
                 );
+
+        outputArea.append(
+                "Prescription ID | Patient | Clinician | Appointment | Date | Medication | " +
+                        "Dosage | Frequency | Duration | Quantity | Instructions | Pharmacy | Status | Issue Date | Collection Date\n"
+        );
+        outputArea.append("-------------------------------------------------------------------------------------------------------------\n");
 
         for (Prescription p : prescriptions) {
             outputArea.append(
                     p.getPrescriptionId() + " | " +
-                            p.getMedicationName() + " | " +
                             p.getPatient().getFullName() + " | " +
-                            p.getStatus() + "\n"
+                            p.getClinician().getFullName() + " | " +
+                            p.getAppointmentId() + " | " +
+                            p.getPrescriptionDate() + " | " +
+                            p.getMedicationName() + " | " +
+                            p.getDosage() + " | " +
+                            p.getFrequency() + " | " +
+                            p.getDurationDays() + " | " +
+                            p.getQuantity() + " | " +
+                            p.getInstructions() + " | " +
+                            p.getPharmacyName() + " | " +
+                            p.getStatus() + " | " +
+                            p.getIssueDate() + " | " +
+                            p.getCollectionDate() + "\n"
             );
         }
-    }
 
+    }
 }

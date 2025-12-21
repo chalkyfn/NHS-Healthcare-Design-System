@@ -15,6 +15,7 @@ public class Patient extends Person {
     private LocalDate registrationDate;
     private Facility registeredFacility;
 
+
     public Patient(
             String patientId,
             String firstName,
@@ -30,6 +31,7 @@ public class Patient extends Person {
             String postcode,
             LocalDate registrationDate,
             Facility registeredFacility
+
     ) {
 
         super(patientId, firstName, lastName);
@@ -90,4 +92,32 @@ public class Patient extends Person {
     public String getPatientId() {
         return personId;
     }
+
+    public String getAddress(){
+        return address;
+    }
+
+    public String getPostCode(){
+        return postCode;
+    }
+
+
+    public String getEmergencyContactName(){
+        return emergencyContactName;
+    }
+    public String getEmergencyContactPhone() {
+        return emergencyContactPhone;
+    }
+
+    public LocalDate getRegistrationDate(){
+        return registrationDate;
+    }
+
+
+
+
+
+
+
+
 }

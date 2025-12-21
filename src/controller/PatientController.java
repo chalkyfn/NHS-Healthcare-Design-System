@@ -3,6 +3,7 @@ package controller;
 import models.Patient;
 import models.Facility;
 import data.DataLoader;
+import data.DataSaver;
 
 import java.util.List;
 
@@ -27,4 +28,9 @@ public class PatientController {
         }
         return null;
     }
+
+    public void addPatient(Patient patient) {
+        DataSaver.appendPatient(patient, "data/patients.csv");
+    }
+
 }

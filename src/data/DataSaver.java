@@ -1,10 +1,12 @@
 package data;
 
+import models.Patient;
 import models.Prescription;
 import models.Referral;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -82,46 +84,78 @@ public class DataSaver {
     // -----------------------------------------------------
     // SAVE PRESCRIPTION AS TEXT FILE
     // -----------------------------------------------------
-    public static void savePrescriptionText(Prescription prescription, String folderPath) {
+    public static void savePrescriptionText(Prescription p, String folderPath) {
 
-        String fileName = folderPath + "/prescription_" + prescription.getPrescriptionId() + ".txt";
+        String fileName = folderPath + "/prescription_" + p.getPrescriptionId() + ".txt";
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
 
             writer.println("==========================================");
-            writer.println("           PRESCRIPTION SUMMARY");
+            writer.println("          NHS PRESCRIPTION");
             writer.println("==========================================");
-            writer.println("Prescription ID: " + prescription.getPrescriptionId());
-            writer.println("Issue Date: " + prescription.getIssueDate());
+            writer.println("Prescription ID: " + p.getPrescriptionId());
+            writer.println("Issue Date: " + p.getIssueDate());
             writer.println();
 
             writer.println("---- PATIENT DETAILS ----");
-            writer.println("Name: " + prescription.getPatient().getFullName());
-            writer.println("NHS Number: " + prescription.getPatient().getNhsNumber());
+            writer.println("Name: " + p.getPatient().getFullName());
+            writer.println("NHS Number: " + p.getPatient().getNhsNumber());
             writer.println();
 
-            writer.println("---- ISSUING CLINICIAN ----");
-            writer.println("Clinician: " + prescription.getClinician().getFullName());
-            writer.println("Role: " + prescription.getClinician().getRole());
+            writer.println("---- CLINICIAN ----");
+            writer.println("Issued By: " + p.getClinician().getFullName());
+            writer.println("Role: " + p.getClinician().getRole());
             writer.println();
 
             writer.println("---- MEDICATION ----");
-            writer.println("Medication: " + prescription.getMedicationName());
-            writer.println("Dosage: " + prescription.getDosage());
+            writer.println("Drug: " + p.getMedicationName());
+            writer.println("Dosage: " + p.getDosage());
+            writer.println("Frequency: " + p.getFrequency());
+            writer.println("Quantity: " + p.getQuantity());
             writer.println();
 
-            writer.println("---- COLLECTION DETAILS ----");
-            writer.println("Pharmacy: " + prescription.getPharmacyName());
-            writer.println("Status: " + prescription.getStatus());
+            writer.println("---- INSTRUCTIONS ----");
+            writer.println(p.getInstructions());
             writer.println();
 
-            writer.println("------------------------------------------");
-            writer.println("Generated: " + TIMESTAMP.format(LocalDateTime.now()));
-            writer.println("------------------------------------------");
+            writer.println("---- PHARMACY ----");
+            writer.println("Pharmacy: " + p.getPharmacyName());
+            writer.println("Status: " + p.getStatus());
+            writer.println();
+
+            writer.println("==========================================");
+            writer.println("Generated: " + LocalDate.now());
+            writer.println("==========================================");
+
+            System.out.println("Prescription saved: " + fileName);
 
         } catch (Exception e) {
-            System.out.println("Error saving prescription text file.");
+            System.out.println("Error saving prescription file");
             e.printStackTrace();
         }
     }
+
+    public static void appendPatient(Patient p, String filePath) {
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath, true))) {
+
+            writer.println(String.join(",",
+                    p.getPatientId(),
+                    p.getFirstName(),
+                    p.getLastName(),
+                    p.getNhsNumber(),
+                    p.getDateOfBirth().toString(),
+                    p.getGender()
+            ));
+
+        } catch (Exception e) {
+            System.out.println("Error saving patient");
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
 }
