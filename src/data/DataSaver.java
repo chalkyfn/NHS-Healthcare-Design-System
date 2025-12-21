@@ -135,24 +135,31 @@ public class DataSaver {
         }
     }
 
-    public static void appendPatient(Patient p, String filePath) {
+    public static void savePatient(Patient p, String filePath) {
 
-        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath, true))) {
+        try (FileWriter fw = new FileWriter(filePath, true)) {
 
-            writer.println(String.join(",",
-                    p.getPatientId(),
-                    p.getFirstName(),
-                    p.getLastName(),
-                    p.getNhsNumber(),
-                    p.getDateOfBirth().toString(),
-                    p.getGender()
-            ));
+            fw.append(
+                    p.getPatientId() + "," +
+                            p.getFirstName() + "," +
+                            p.getLastName() + "," +
+                            p.getDateOfBirth() + "," +
+                            p.getNhsNumber() + "," +
+                            p.getGender() + "," +
+                            p.getPhoneNumber() + "," +
+                            p.getEmail() + "," +
+                            p.getAddress() + "," +
+                            p.getPostCode() + "," +
+                            p.getEmergencyContactName() + "," +
+                            p.getEmergencyContactPhone() + "," +
+                            p.getGpSurgeryID() + "\n"
+            );
 
         } catch (Exception e) {
-            System.out.println("Error saving patient");
             e.printStackTrace();
         }
     }
+
 
 
 

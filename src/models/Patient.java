@@ -13,7 +13,8 @@ public class Patient extends Person {
     private String emergencyContactName;
     private String emergencyContactPhone;
     private LocalDate registrationDate;
-    private Facility registeredFacility;
+    String GpSurgeryID;
+    String postCode;
 
 
     public Patient(
@@ -30,7 +31,7 @@ public class Patient extends Person {
             String nhsNumber,
             String postcode,
             LocalDate registrationDate,
-            Facility registeredFacility
+            String GpSurgeryID
 
     ) {
 
@@ -44,29 +45,32 @@ public class Patient extends Person {
         this.emergencyContactName = emergencyContactName;
         this.emergencyContactPhone = emergencyContactPhone;
         this.nhsNumber = nhsNumber;
+        this.postCode = postcode;
         this.registrationDate = registrationDate;
-        this.registeredFacility = registeredFacility;
+        this.GpSurgeryID = GpSurgeryID;
     }
 
 
 
     public String toString() {
+
         return getFullName() + " (" + nhsNumber + ")";
     }
 
     public String getNhsNumber(){
+
         return nhsNumber;
     }
 
-    public Facility getRegisteredFacility(){
-        return registeredFacility;
-        }
+    public String getGpSurgeryID(){
+        return GpSurgeryID;
+    }
 
     public void updateInfo(String patientId, String firstName, String lastName,
                            LocalDate dob, String nhsNumber, String gender,
                            String phone, String email, String address, String postcode,
                            String emergencyContactName, String emergencyContactNumber,
-                           LocalDate registrationDate, Facility facility){
+                           LocalDate registrationDate, String GpSurgeryID){
 
         this.personId = patientId;
         this.firstName = firstName;
@@ -74,14 +78,14 @@ public class Patient extends Person {
         this.dateOfBirth = dob;
         this.gender = gender;
         this.nhsNumber = nhsNumber;
-        this.phoneNumber = phone;
+        this.phone = phone;
         this.email = email;
         this.address = address;
         this.postCode = postcode;
         this.emergencyContactName = emergencyContactName;
         this.emergencyContactPhone = emergencyContactNumber;
         this.registrationDate = registrationDate;
-        this.registeredFacility = facility;
+        this.GpSurgeryID = GpSurgeryID;
 
     }
 
@@ -113,7 +117,24 @@ public class Patient extends Person {
         return registrationDate;
     }
 
+    public void updateContactInfo(String phoneNumber, String email){
+        this.phone= phoneNumber;
+        this.email = email;
+    }
 
+    public String getPhoneNumber() {
+
+        return phone;
+    }
+
+
+    public String getEmail(){
+        return email;
+    }
+
+    public String getGender(){
+        return gender;
+    }
 
 
 

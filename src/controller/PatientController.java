@@ -30,7 +30,7 @@ public class PatientController {
     }
 
     public void addPatient(Patient patient) {
-        DataSaver.appendPatient(patient, "data/patients.csv");
+        DataSaver.savePatient(patient, "data/patients.csv");
     }
 
 }

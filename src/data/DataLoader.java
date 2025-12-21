@@ -64,23 +64,22 @@ public class DataLoader {
             while ((line = br.readLine()) != null) {
                 String[] p = CSVUtils.split(line);
 
-                Facility facility = findFacility(facilities, p[13]);
 
                 patients.add(new Patient(
                         p[0],
                         p[1],
                         p[2],
                         CSVUtils.parseDate(p[3]),
-                        p[10],
                         p[5],
+                        p[6],
                         p[7],
                         p[8],
-                        p[8],
-                        p[9],
-                        p[4],
+                        p[10],
                         p[11],
+                        p[4],
+                        p[9],
                         CSVUtils.parseDate(p[12]),
-                        facility
+                        p[13]
                 ));
             }
 
@@ -114,7 +113,7 @@ public class DataLoader {
                 String role = c[3].toLowerCase();
 
                 if (role.equals("gp")) {
-                    clinician = new GP(c[0], c[1], c[2], c[4], facility);
+                    clinician = new GP(c[0], c[1], c[2], c[4],facility);
                 } else if (role.equals("nurse")) {
                     clinician = new Nurse(c[0], c[1], c[2], c[4], facility);
                 } else {
