@@ -64,6 +64,10 @@ public class Appointment {
         return patient.getPatientId();
     }
 
+    public String getClinicianId(){
+        return clinician.getClinicianId();
+    }
+
     public void setStatus(String setTo) {
         status = setTo;
     }
@@ -109,4 +113,18 @@ public class Appointment {
     public  LocalDate getLastModified(){
         return lastModified;
     }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+
+    public Clinician getClinician() {
+        return clinician;
+    }
+
+    public Facility getFacility() {
+        return facility;
+    }
+
 }

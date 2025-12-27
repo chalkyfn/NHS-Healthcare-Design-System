@@ -39,7 +39,7 @@ public class MainUI extends JFrame {
 
         JButton loadAppointmentsBtn = new JButton("Load Appointments");
         JButton loadPrescriptionsBtn = new JButton("Load Prescriptions");
-        JButton exportPrescriptionBtn = new JButton("Export First Prescription");
+        JButton loadReferralBtn = new JButton("Load Referrals");
         JButton loadPatientsButton = new JButton("Load Patients");
 
 
@@ -49,7 +49,7 @@ public class MainUI extends JFrame {
         buttonPanel.add(loadPatientsButton);
         buttonPanel.add(loadAppointmentsBtn);
         buttonPanel.add(loadPrescriptionsBtn);
-        buttonPanel.add(exportPrescriptionBtn);
+        buttonPanel.add(loadReferralBtn);
 
 
         add(buttonPanel, BorderLayout.NORTH);
@@ -66,51 +66,44 @@ public class MainUI extends JFrame {
         });
 
         loadAppointmentsBtn.addActionListener(e -> {
-            new AppointmentsUI().setVisible(true);
+            AppointmentUI appointmentUI = new AppointmentUI(appointmentController);
+            appointmentUI.setVisible(true);
+
         });
 
         loadPrescriptionsBtn.addActionListener(e -> {
             new PrescriptionUI().setVisible(true);
         });
 
-
-        exportPrescriptionBtn.addActionListener(e -> {
-
-// Load shared data once
-            List<Facility> facilities =
-                    DataLoader.loadFacilities("data/facilities.csv");
-
-            List<Patient> patients =
-                    DataLoader.loadPatients("data/patients.csv", facilities);
-
-            List<Clinician> clinicians =
-                    DataLoader.loadClinicians("data/clinicians.csv", facilities);
-
-            List<Appointment> appointments =
-                    DataLoader.loadAppointments(
-                            "data/appointments.csv",
-                            patients,
-                            clinicians,
-                            facilities
-                    );
-
-// Now load prescriptions
-            List<Prescription> prescriptions =
-                    prescriptionController.getAllPrescriptions(
-                            "data/prescriptions.csv",
-                            patients,
-                            clinicians,
-                            appointments
-                    );
+        loadReferralBtn.addActionListener(e -> new ReferralUI().setVisible(true));
 
 
-            if (!prescriptions.isEmpty()) {
-                prescriptionController.generatePrescriptionFile(
-                        prescriptions.get(0),
-                        "output"
+        // Load shared data
+        List<Facility> facilities =
+                DataLoader.loadFacilities("data/facilities.csv");
+
+        List<Patient> patients =
+                DataLoader.loadPatients("data/patients.csv", facilities);
+
+        List<Clinician> clinicians =
+                DataLoader.loadClinicians("data/clinicians.csv", facilities);
+
+        List<Appointment> appointments =
+                DataLoader.loadAppointments(
+                        "data/appointments.csv",
+                        patients,
+                        clinicians,
+                        facilities
                 );
-                outputArea.append("\nPrescription file generated.\n");
-            }
-        });
 
-    }}
+        // load prescriptions
+        List<Prescription> prescriptions =
+                prescriptionController.getAllPrescriptions(
+                        "data/prescriptions.csv",
+                        patients,
+                        clinicians,
+                        appointments
+                );
+        };
+
+    }

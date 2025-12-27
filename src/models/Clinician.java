@@ -31,4 +31,7 @@ public abstract class Clinician extends Person {
         return getFullName() + "(" + role + ")" ;
     }
 
+    public String getRole() {
+        return role;
+    }
 }

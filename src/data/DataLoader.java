@@ -4,6 +4,9 @@ import models.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
+
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,9 +50,8 @@ public class DataLoader {
         return facilities;
     }
 
-    // =====================================================
+
     // PATIENTS
-    // =====================================================
     public static List<Patient> loadPatients(
             String path,
             List<Facility> facilities) {
@@ -63,7 +65,10 @@ public class DataLoader {
 
             while ((line = br.readLine()) != null) {
                 String[] p = CSVUtils.split(line);
-
+                if (p.length < 13) {
+                    System.out.println("Skipping invalid patient row: " + line);
+                    continue;
+                }
 
                 patients.add(new Patient(
                         p[0],
@@ -90,9 +95,8 @@ public class DataLoader {
         return patients;
     }
 
-    // =====================================================
+
     // CLINICIANS
-    // =====================================================
     public static List<Clinician> loadClinicians(
             String path,
             List<Facility> facilities) {
@@ -130,9 +134,8 @@ public class DataLoader {
         return clinicians;
     }
 
-    // =====================================================
+
     // APPOINTMENTS
-    // =====================================================
     public static List<Appointment> loadAppointments(
             String path,
             List<Patient> patients,
@@ -148,6 +151,10 @@ public class DataLoader {
 
             while ((line = br.readLine()) != null) {
                 String[] a = CSVUtils.split(line);
+                if (a.length < 13) {
+                    System.out.println("Skipping invalid patient row: " + line);
+                    continue;
+                }
 
                 Patient patient = findPatient(patients, a[1]);
                 Clinician clinician = findClinician(clinicians, a[2]);
@@ -179,17 +186,109 @@ public class DataLoader {
         return appointments;
     }
 
-    // =====================================================
+
     // PRESCRIPTIONS
-    // =====================================================
-    public static List<Prescription> loadPrescriptions(
+        public static List<Prescription> loadPrescriptions(
+                String filePath,
+                List<Patient> patients,
+                List<Clinician> clinicians,
+                List<Appointment> appointments
+        ) {
+
+            List<Prescription> prescriptions = new ArrayList<>();
+
+            try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+
+                String line = br.readLine(); // skip header
+
+                while ((line = br.readLine()) != null) {
+
+                    String[] data = CSVUtils.split(line);
+
+
+
+                    String prescriptionId = data[0];
+                    String patientId = data[1];
+                    String clinicianId = data[2];
+                    String appointmentId = data[3];
+                    LocalDate prescription_date = CSVUtils.parseDateSafe(data[4]);
+                    String medicationName = data[5];
+                    String dosage = data[6];
+                    String frequency = data[7];
+                    int duration_days = CSVUtils.parseIntSafe(data[8]);
+                    String quantity = data[9];
+                    String instructions = data[10];
+                    String pharmacyName = data[11];
+                    String status = data[12];
+
+                    LocalDate issueDate = CSVUtils.parseDateSafe(data[13]);
+                    LocalDate collectionDate =  null;
+
+                    // using this as a temperary fix cause the data loading keeps failing
+                    if (data.length > 14 && !data[14].isBlank()) {
+                        collectionDate = LocalDate.parse(data[14]);
+                    }
+
+
+                    Patient patient = patients.stream()
+                            .filter(p -> p.getPatientId().equals(patientId))
+                            .findFirst()
+                            .orElse(null);
+
+                    Clinician clinician = clinicians.stream()
+                            .filter(c -> c.getClinicianId().equals(clinicianId))
+                            .findFirst()
+                            .orElse(null);
+
+                    Appointment appointment = appointments.stream()
+                            .filter(c -> c.getAppointmentId().equals(appointmentId))
+                            .findFirst()
+                            .orElse(null);
+
+                    if (patient == null || clinician == null) {
+                        continue;
+                    }
+
+
+                    prescriptions.add(new Prescription(
+                            prescriptionId,
+                            patient,
+                            clinician,
+                            appointment,
+                            prescription_date,
+                            medicationName,
+                            dosage,
+                            frequency,
+                            duration_days,
+                            quantity,
+                            instructions,
+                            pharmacyName,
+                            status,
+                            issueDate,
+                            collectionDate
+
+                    ));
+                }
+
+            } catch (Exception e) {
+                System.out.println("Error loading prescriptions");
+                e.printStackTrace();
+            }
+
+            return prescriptions;
+        }
+
+
+    // REFERRALS
+    public static List<Referral> loadReferrals(
             String filePath,
             List<Patient> patients,
             List<Clinician> clinicians,
+            List<Facility> facilities,
             List<Appointment> appointments
     ) {
 
-        List<Prescription> prescriptions = new ArrayList<>();
+        List<Referral> referrals = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 
@@ -199,32 +298,51 @@ public class DataLoader {
 
                 String[] data = CSVUtils.split(line);
 
+                if (data.length < 15) {
+                    System.out.println("Skipping invalid referral row: " + line);
+                    continue;
+                }
 
-
-                String prescriptionId = data[0];
+                String referralId = data[0];
                 String patientId = data[1];
-                String clinicianId = data[2];
-                String appointmentId = data[3];
-                LocalDate prescription_date = CSVUtils.parseDateSafe(data[4]);
-                String medicationName = data[5];
-                String dosage = data[6];
-                String frequency = data[7];
-                int duration_days = CSVUtils.parseIntSafe(data[8]);
-                String quantity = data[9];
-                String instructions = data[10];
-                String pharmacyName = data[11];
-                String status = data[12];
+                String referringClinicianId = data[2];
+                String referredClinicianId = data[3];
+                String referringFacilityId = data[4];
+                String referredFacilityId = data[5];
 
-                LocalDate issueDate = CSVUtils.parseDateSafe(data[13]);
-
+                LocalDate referralDate = CSVUtils.parseDateSafe(data[6]);
+                String urgency = data[7];
+                String referralReason = data[8];
+                String clinicalSummary = data[9];
+                String requestedInvestigations = data[10];
+                String status = data[11];
+                String appointmentId = data[12];
+                String notes = data[13].replace("\"", "").trim();
+                LocalDate createdDate = CSVUtils.parseDateSafe(data[14]);
+                LocalDate lastUpdated = CSVUtils.parseDateSafe(data[15]);
 
                 Patient patient = patients.stream()
                         .filter(p -> p.getPatientId().equals(patientId))
                         .findFirst()
                         .orElse(null);
 
-                Clinician clinician = clinicians.stream()
-                        .filter(c -> c.getClinicianId().equals(clinicianId))
+                Clinician referringClinician = clinicians.stream()
+                        .filter(c -> c.getClinicianId().equals(referringClinicianId))
+                        .findFirst()
+                        .orElse(null);
+
+                Clinician referredClinician = clinicians.stream()
+                        .filter(c -> c.getClinicianId().equals(referredClinicianId))
+                        .findFirst()
+                        .orElse(null);
+
+                Facility referringFacility = facilities.stream()
+                        .filter(f -> f.getFacilityId().equals(referringFacilityId))
+                        .findFirst()
+                        .orElse(null);
+
+                Facility referredFacility = facilities.stream()
+                        .filter(f -> f.getFacilityId().equals(referredFacilityId))
                         .findFirst()
                         .orElse(null);
 
@@ -233,44 +351,45 @@ public class DataLoader {
                         .findFirst()
                         .orElse(null);
 
-                if (patient == null || clinician == null) {
+
+                if (patient == null || referringClinician == null || referredClinician == null) {
                     continue;
                 }
 
-
-                prescriptions.add(new Prescription(
-                        prescriptionId,
+                referrals.add(new Referral(
+                        referralId,
                         patient,
-                        clinician,
-                        appointment,
-                        prescription_date,
-                        medicationName,
-                        dosage,
-                        frequency,
-                        duration_days,
-                        quantity,
-                        instructions,
-                        pharmacyName,
+                        referringClinician,
+                        referredClinician,
+                        referringFacility,
+                        referredFacility,
+                        referralDate,
+                        urgency,
+                        referralReason,
+                        clinicalSummary,
+                        requestedInvestigations,
                         status,
-                        issueDate
-
+                        appointment,
+                        notes,
+                        createdDate,
+                        lastUpdated
                 ));
             }
 
         } catch (Exception e) {
-            System.out.println("Error loading prescriptions");
+            System.out.println("Error loading referrals");
             e.printStackTrace();
         }
 
-        return prescriptions;
+        return referrals;
     }
 
 
 
 
-    // =====================================================
-    // HELPERS (NULL SAFE)
-    // =====================================================
+
+
+    // Helpers
     private static Patient findPatient(List<Patient> patients, String id) {
         for (Patient p : patients) {
             if (p.getPatientId().equals(id)) return p;
@@ -299,6 +418,7 @@ public class DataLoader {
         }
         return null;
     }
+
 
 
 }

@@ -41,7 +41,8 @@ public class Prescription {
             String instructions,
             String pharmacyName,
             String status,
-            LocalDate issueDate
+            LocalDate issueDate,
+            LocalDate collectionDate
 
     ) {
         this.prescriptionId = prescriptionId;
@@ -58,16 +59,19 @@ public class Prescription {
         this.pharmacyName = pharmacyName;
         this.status = status;
         this.issueDate = issueDate;
+        this.collectionDate = collectionDate;
 
     }
 
     // ---------------- GETTERS ----------------
 
     public String getPrescriptionId() {
+
         return prescriptionId;
     }
 
     public Patient getPatient() {
+
         return patient;
     }
 
@@ -120,11 +124,14 @@ public class Prescription {
         return collectionDate;
     }
 
-    public String getAppointmentId() {
-        return appointment != null ? appointment.getAppointmentId() : "null";
-    }
 
     public LocalDate getPrescriptionDate() {
         return prescription_date;
     }
+
+    public Appointment getAppointment() {
+        return appointment;
+    }
+
+
 }

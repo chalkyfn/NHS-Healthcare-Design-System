@@ -29,17 +29,17 @@ public class ReferralManager {
 
     // ---------------- BUSINESS LOGIC ----------------
 
-    public void processReferral(Referral referral) {
-        if (!referralQueue.contains(referral)) {
-            referralQueue.add(referral);
-
-            // Simulate sending referral (text output)
-            DataSaver.saveReferralText(
-                    referral,
-                    "data/referrals_output.txt"
-            );
-        }
-    }
+//    public void processReferral(Referral referral) {
+//        if (!referralQueue.contains(referral)) {
+//            referralQueue.add(referral);
+//
+//            // Simulate sending referral (text output)
+//            DataSaver.saveReferralText(
+//                    referral,
+//                    "data/referrals_output.txt"
+//            );
+//        }
+//    }
 
     public List<Referral> getAllReferrals() {
         return referralQueue;

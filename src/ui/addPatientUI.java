@@ -12,10 +12,22 @@ public class addPatientUI extends JFrame {
     private final PatientUI parent;
     private final PatientController patientController;
 
-    private JTextField idField, firstNameField,lastNameField, dobField, nhsField,
-            genderField, phoneField, emailField,
-            addressField, postCodeField,
-            emergencyNameField, emergencyPhoneField, gpSugeryField,TYPESHIT;
+    private Patient editingPatient;
+    private int editingRow = -1;
+
+    private JTextField idField;
+    private JTextField firstNameField;
+    private JTextField lastNameField;
+    private JTextField dobField;
+    private JTextField nhsField;
+    private JTextField genderField;
+    private JTextField phoneField;
+    private JTextField emailField;
+    private JTextField addressField;
+    private JTextField postCodeField;
+    private JTextField emergencyNameField;
+    private JTextField emergencyPhoneField;
+    private JTextField gpSugeryField;
 
     public addPatientUI(PatientUI parent, PatientController controller) {
         this.parent = parent;
@@ -29,8 +41,33 @@ public class addPatientUI extends JFrame {
         initUI();
     }
 
+    public addPatientUI(PatientUI parent,
+                        PatientController controller,
+                        Patient patient,
+                        int row) {
+
+        this.parent = parent;
+        this.patientController = controller;
+        this.editingPatient = patient;
+        this.editingRow = row;
+
+        setTitle("Edit Patient");
+
+
+        initUI();
+        fillFields(patient);
+    }
+
     private void initUI() {
-        JPanel panel = new JPanel(new GridLayout(12,10));
+        setSize(660, 550);
+        setLocationRelativeTo(parent);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JPanel panel = new JPanel();
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+        panel.setLayout(new GridLayout(14, 2, 10, 10));
+
+
         idField = addField(panel, "Patient ID:");
         firstNameField = addField(panel, "First Name:");
         lastNameField = addField(panel, "Last Name");
@@ -53,6 +90,23 @@ public class addPatientUI extends JFrame {
         panel.add(saveButton);
 
         add(panel);
+    }
+
+    private void fillFields(Patient p) {
+
+        idField.setText(p.getPatientId());
+        firstNameField.setText(p.getFirstName());
+        lastNameField.setText(p.getLastName());
+        dobField.setText(p.getDateOfBirth().toString());
+        nhsField.setText(p.getNhsNumber());
+        genderField.setText(p.getGender());
+        phoneField.setText(p.getPhoneNumber());
+        emailField.setText(p.getEmail());
+        addressField.setText(p.getAddress());
+        postCodeField.setText(p.getPostCode());
+        emergencyNameField.setText(p.getEmergencyContactName());
+        emergencyPhoneField.setText(p.getEmergencyContactPhone());
+        gpSugeryField.setText(p.getGpSurgeryID());
     }
 
     private JTextField addField(JPanel panel, String label) {
@@ -83,9 +137,13 @@ public class addPatientUI extends JFrame {
                     gpSugeryField.getText()
             );
 
-            patientController.addPatient(patient);
+            if (editingPatient == null) {
+                parent.addPatientToTable(patient);   // ADD
+            } else {
+                parent.updatePatientInTable(editingRow, patient); // EDIT
+            }
 
-
+            dispose();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(
                     this,

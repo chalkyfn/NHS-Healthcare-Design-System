@@ -1,9 +1,11 @@
 package data;
 
+import models.Appointment;
 import models.Patient;
 import models.Prescription;
 import models.Referral;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.time.LocalDate;
@@ -18,122 +20,35 @@ public class DataSaver {
     // -----------------------------------------------------
     // SAVE REFERRAL AS TEXT FILE
     // -----------------------------------------------------
-    public static void saveReferralText(Referral referral, String folderPath) {
-
-        String fileName = folderPath + "/referral_" + referral.getReferralId() + ".txt";
-
-        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
-
-            writer.println("==========================================");
-            writer.println("           NHS REFERRAL SUMMARY");
-            writer.println("==========================================");
-            writer.println("Referral ID: " + referral.getReferralId());
-            writer.println("Referral Date: " + referral.getReferralDate());
-            writer.println();
-
-            writer.println("---- PATIENT DETAILS ----");
-            writer.println("Name: " + referral.getPatient().getFullName());
-            writer.println("NHS Number: " + referral.getPatient().getNhsNumber());
-            writer.println("Date of Birth: " + referral.getPatient().getDateOfBirth());
-            writer.println();
-
-            writer.println("---- REFERRING CLINICIAN ----");
-            writer.println("Clinician: " + referral.getReferringClinician().getFullName());
-            writer.println("Role: " + referral.getReferringClinician().getRole());
-            writer.println("Facility: " +
-                    (referral.getReferringFacility() != null
-                            ? referral.getReferringFacility().getFacilityName()
-                            : "Unknown"));
-            writer.println();
-
-            writer.println("---- REFERRED TO ----");
-            writer.println("Specialist: " + referral.getReferredToClinician().getFullName());
-            writer.println("Facility: " + referral.getReferredToFacility().getFacilityName());
-            writer.println("Urgency: " + referral.getUrgencyLevel());
-            writer.println();
-
-            writer.println("---- CLINICAL SUMMARY ----");
-            writer.println(referral.getClinicalSummary());
-            writer.println();
-
-            writer.println("---- REASON FOR REFERRAL ----");
-            writer.println(referral.getReferralReason());
-            writer.println();
-
-            writer.println("---- REQUESTED INVESTIGATIONS ----");
-            for (String investigation : referral.getRequestedInvestigations()) {
-                writer.println("- " + investigation);
+    public static void saveReferralText(Referral referral) {
+        try {
+            File dir = new File("output");
+            if (!dir.exists()) {
+                dir.mkdirs();
             }
-            writer.println();
 
-            writer.println("---- STATUS ----");
-            writer.println("Status: " + referral.getStatus());
-            writer.println("Notes: " + referral.getNotes());
-            writer.println();
+            FileWriter writer = new FileWriter(
+                    "output/referral_" + referral.getReferralId() + ".txt"
+            );
 
-            writer.println("------------------------------------------");
-            writer.println("Generated: " + TIMESTAMP.format(LocalDateTime.now()));
-            writer.println("------------------------------------------");
+            writer.write("Referral ID: " + referral.getReferralId() + "\n");
+            writer.write("Patient: " + referral.getPatient().getFullName() + "\n");
+            writer.write("Clinician: " + referral.getReferredToClinician().getFullName() + "\n");
+            writer.write("Summary " + referral.getClinicalSummary() + "\n");
+            writer.write("Reason: " + referral.getReferralReason() + "\n");
+            writer.write("Date: " + referral.getReferralDate() + "\n");
+
+            writer.close();
 
         } catch (Exception e) {
-            System.out.println("Error saving referral text file.");
+            System.out.println("Error saving referral file");
             e.printStackTrace();
         }
     }
 
-    // -----------------------------------------------------
-    // SAVE PRESCRIPTION AS TEXT FILE
-    // -----------------------------------------------------
-    public static void savePrescriptionText(Prescription p, String folderPath) {
 
-        String fileName = folderPath + "/prescription_" + p.getPrescriptionId() + ".txt";
 
-        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
 
-            writer.println("==========================================");
-            writer.println("          NHS PRESCRIPTION");
-            writer.println("==========================================");
-            writer.println("Prescription ID: " + p.getPrescriptionId());
-            writer.println("Issue Date: " + p.getIssueDate());
-            writer.println();
-
-            writer.println("---- PATIENT DETAILS ----");
-            writer.println("Name: " + p.getPatient().getFullName());
-            writer.println("NHS Number: " + p.getPatient().getNhsNumber());
-            writer.println();
-
-            writer.println("---- CLINICIAN ----");
-            writer.println("Issued By: " + p.getClinician().getFullName());
-            writer.println("Role: " + p.getClinician().getRole());
-            writer.println();
-
-            writer.println("---- MEDICATION ----");
-            writer.println("Drug: " + p.getMedicationName());
-            writer.println("Dosage: " + p.getDosage());
-            writer.println("Frequency: " + p.getFrequency());
-            writer.println("Quantity: " + p.getQuantity());
-            writer.println();
-
-            writer.println("---- INSTRUCTIONS ----");
-            writer.println(p.getInstructions());
-            writer.println();
-
-            writer.println("---- PHARMACY ----");
-            writer.println("Pharmacy: " + p.getPharmacyName());
-            writer.println("Status: " + p.getStatus());
-            writer.println();
-
-            writer.println("==========================================");
-            writer.println("Generated: " + LocalDate.now());
-            writer.println("==========================================");
-
-            System.out.println("Prescription saved: " + fileName);
-
-        } catch (Exception e) {
-            System.out.println("Error saving prescription file");
-            e.printStackTrace();
-        }
-    }
 
     public static void savePatient(Patient p, String filePath) {
 
@@ -156,6 +71,32 @@ public class DataSaver {
             );
 
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveAppointment(Appointment a, String filePath) {
+
+        try (FileWriter fw = new FileWriter(filePath, true)) {
+
+            fw.append(
+                    a.getAppointmentId()+ "," +
+                    a.getPatientId()+ "," +
+                    a.getClinicianId()+ "," +
+                    a.getFacilityId()+ "," +
+                    a.getAppointmentDate()+ "," +
+                    a.getAppointmentTime()+ "," +
+                    a.getDurationTime()+ "," +
+                    a.getAppointmentType()+ "," +
+                    a.getStatus()+ "," +
+                    a.getReasonForVisit()+ "," +
+                    a.getNotes()+ "," +
+                    a.getCreatedDate()+ "," +
+                    a.getLastModified()+ "\n"
+            );
+
+        }catch (Exception e) {
+            System.out.println("Error saving appointment");
             e.printStackTrace();
         }
     }

@@ -2,6 +2,9 @@ package models;
 
 import java.time.LocalDate;
 import java.util.List;
+import models.Patient;
+import models.Appointment;
+
 
 public class Referral {
 
@@ -15,14 +18,12 @@ public class Referral {
     private String urgencyLevel;
     private String referralReason;
     private String clinicalSummary;
-    private List<String> requestedInvestigations;
+    private String requestedInvestigations;
     private String status;
     private String notes;
     private LocalDate createdDate;
     private LocalDate lastUpdated;
     private Appointment appointment;
-
-    public Referral() {}
 
     public Referral(
             String referralId,
@@ -35,13 +36,13 @@ public class Referral {
             String urgencyLevel,
             String referralReason,
             String clinicalSummary,
-            List<String> requestedInvestigations,
+            String requestedInvestigations,
             String status,
+            Appointment appointment,
             String notes,
             LocalDate createdDate,
-            LocalDate lastUpdated,
-            Appointment appointment) {
-
+            LocalDate lastUpdated
+    ) {
         this.referralId = referralId;
         this.patient = patient;
         this.referringClinician = referringClinician;
@@ -54,16 +55,11 @@ public class Referral {
         this.clinicalSummary = clinicalSummary;
         this.requestedInvestigations = requestedInvestigations;
         this.status = status;
+        this.appointment = appointment;
         this.notes = notes;
         this.createdDate = createdDate;
         this.lastUpdated = lastUpdated;
-        this.appointment = appointment;
     }
-
-
-
-
-
 // Getters
 
     public String getReferralId() {
@@ -115,11 +111,25 @@ public class Referral {
         return referralReason;
     }
 
-    public List<String> getRequestedInvestigations() {
+    public String getRequestedInvestigations() {
         return requestedInvestigations;
     }
 
     public String getNotes() {
         return notes;
     }
+
+    public LocalDate getCreatedDate(){
+        return createdDate;
+    }
+
+    public LocalDate getLastUpdated(){
+        return  lastUpdated;
+    }
+
+    public Appointment getAppointment(){
+        return appointment;
+    }
+
+
 }
