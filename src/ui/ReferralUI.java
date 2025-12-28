@@ -31,6 +31,18 @@ public class ReferralUI extends JFrame {
     }
 
     private void initUI() {
+
+        String[] columns = {
+                "Referral ID",
+                "Patient",
+                "Clinician",
+                "Appointment",
+                "Reason",
+                "Priority",
+                "Status",
+                "Referral Date"
+        };
+
         setLayout(new BorderLayout());
 
         model = new DefaultTableModel(
@@ -67,16 +79,36 @@ public class ReferralUI extends JFrame {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        JButton addBtn = new JButton("Add");
-        JButton editBtn = new JButton("Edit");
-        JButton deleteBtn = new JButton("Delete");
-        JButton exportBtn = new JButton("Export");
+        JButton addButton = new JButton("Add");
+        addButton.addActionListener(e -> {
+            new addReferralUI(this, referralController).setVisible(true);
+        });
 
 
-        buttonPanel.add(addBtn);
-        buttonPanel.add(editBtn);
-        buttonPanel.add(deleteBtn);
-        buttonPanel.add(exportBtn);
+        JButton editButton = new JButton("Edit");
+        editButton.addActionListener(e -> editSelectedReferral());
+
+
+        JButton deleteButton = new JButton("Delete");
+        deleteButton.addActionListener(e -> deleteSelectedReferral());
+        buttonPanel.add(deleteButton);
+
+
+        JButton exportButton = new JButton("Export");
+        exportButton.addActionListener(e -> {
+            Referral selected = getSelectedReferral();
+            if (selected != null) {
+                referralController.exportReferral(selected);
+                JOptionPane.showMessageDialog(this, "Referral exported successfully");
+            }
+        });
+
+
+
+        buttonPanel.add(addButton);
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(exportButton);
 
         add(buttonPanel, BorderLayout.SOUTH);
     }
@@ -146,4 +178,186 @@ public class ReferralUI extends JFrame {
             });
         }
     }
+
+    private Referral getSelectedReferral() {
+
+        int row = table.getSelectedRow();
+
+        if (row == -1) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please select a referral",
+                    "No Selection",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return null;
+        }
+
+        String referralId = table.getValueAt(row, 0).toString();
+
+        return referralController.findReferralById(referralId);
+    }
+
+
+    public void addReferralToTable(Referral r) {
+
+        String appointmentId =
+                r.getAppointment() != null
+                        ? r.getAppointment().getAppointmentId()
+                        : "N/A";
+
+        model.addRow(new Object[]{
+                r.getReferralId(),
+                r.getPatient().getPatientId(),
+                r.getReferringClinicianId(),
+                r.getReferredToClinicianId(),
+                r.getReferringFacilityId(),
+                r.getReferredToFacilityId(),
+                r.getReferralDate(),
+                r.getUrgencyLevel(),
+                r.getReferralReason(),
+                r.getClinicalSummary(),
+                r.getRequestedInvestigations(),
+                r.getStatus(),
+                appointmentId,
+                r.getNotes(),
+                r.getCreatedDate(),
+                r.getLastUpdated()
+        });
+    }
+
+    private void editSelectedReferral() {
+
+        int row = table.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please select a referral to edit",
+                    "No Selection",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        // read values from table
+        String referralId = model.getValueAt(row, 0).toString();
+        String patientId = model.getValueAt(row, 1).toString();
+        String clinicianId = model.getValueAt(row, 2).toString();
+        String referredTo = model.getValueAt(row, 3).toString();
+        String fromFacilityId = model.getValueAt(row, 4).toString();
+        String toFacilityId = model.getValueAt(row, 5).toString();
+
+        LocalDate referralDate =
+                LocalDate.parse(model.getValueAt(row, 6).toString());
+
+        String urgency = model.getValueAt(row, 7).toString();
+        String referralReason = model.getValueAt(row, 8).toString();
+        String clinicalSummary = model.getValueAt(row, 9).toString();
+        String investigations = model.getValueAt(row, 10).toString();
+        String status = model.getValueAt(row, 11).toString();
+        String appointmentId = model.getValueAt(row, 12).toString();
+        String notes = model.getValueAt(row, 13).toString();
+
+        // Look up linked objects
+        Patient patient = referralController.findPatientById(patientId);
+        Clinician clinician = referralController.findClinicianById(clinicianId);
+        Clinician toClinician = referralController.findClinicianById(clinicianId);
+        Facility fromFacility = referralController.findFacilityById(fromFacilityId);
+        Facility toFacility = referralController.findFacilityById(toFacilityId);
+
+        Appointment appointment = null;
+        if (!appointmentId.isBlank() && !appointmentId.equalsIgnoreCase("N/A")) {
+            appointment = referralController.findAppointmentById(appointmentId);
+        }
+
+        if (patient == null || clinician == null || fromFacility == null || toFacility == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Invalid referral data detected",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        Referral referral = new Referral(
+                referralId,
+                patient,
+                clinician,
+                toClinician,
+                fromFacility,
+                toFacility,
+                referralDate,
+                urgency,
+                referralReason,
+                clinicalSummary,
+                investigations,
+                status,
+                appointment,
+                notes,
+                LocalDate.now(),     // created date (kept simple)
+                LocalDate.now()      // last updated
+        );
+
+        new addReferralUI(this, referralController, referral, row).setVisible(true);
+    }
+
+    public void updateReferralInTable(int row, Referral r) {
+
+        model.setValueAt(r.getReferralId(), row, 0);
+        model.setValueAt(r.getPatient().getFullName(), row, 1);
+        model.setValueAt(r.getReferringClinician().getClinicianId(), row, 2);
+        model.setValueAt(r.getReferredToClinicianId(), row, 3);
+        model.setValueAt(r.getReferringFacilityId(), row, 4);
+        model.setValueAt(r.getReferredToFacilityId(), row, 5);
+        model.setValueAt(r.getReferralDate(), row, 6);
+        model.setValueAt(r.getUrgencyLevel(),row, 7);
+        model.setValueAt(r.getReferralReason(), row, 8);
+        model.setValueAt(r.getClinicalSummary(), row, 9);
+        model.setValueAt(r.getRequestedInvestigations(), row, 10);
+        model.setValueAt(r.getStatus(), row, 11);
+
+        if (r.getAppointment() != null) {
+            model.setValueAt(r.getAppointment().getAppointmentId(), row, 12);
+        } else {
+            model.setValueAt("N/A", row, 12);
+        }
+
+        model.setValueAt(r.getNotes(), row, 13);
+        model.setValueAt(r.getCreatedDate(), row, 14);
+        model.setValueAt(r.getLastUpdated(), row, 15);
+    }
+
+    private void deleteSelectedReferral() {
+
+        int row = table.getSelectedRow();
+
+        if (row == -1) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please select a referral to delete",
+                    "No Selection",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to delete this referral?",
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            model.removeRow(row);
+        }
+    }
+
+
+
+
+
+
+
 }

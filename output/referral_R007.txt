@@ -1,0 +1,6 @@
+Referral ID: R007
+Patient: Patricia Moore
+Clinician: Dr. Jennifer Lee
+Summary "42-year-old female with severe atopic eczema not responding to standard treatments. Affects quality of life significantly."
+Reason: Chronic eczema
+Date: 2025-09-20

@@ -25,6 +25,7 @@ public class PrescriptionController {
 //    }
 
     public void updateStatus(Prescription prescription, String newStatus) {
+
         prescription.updateStatus(newStatus);
     }
 

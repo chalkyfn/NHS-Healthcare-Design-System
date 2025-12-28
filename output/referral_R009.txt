@@ -1,0 +1,6 @@
+Referral ID: R009
+Patient: Elizabeth Anderson
+Clinician: Dr. Richard Evans
+Summary "38-year-old female with Type 2 diabetes requiring annual cardiovascular risk assessment. HbA1c slightly elevated."
+Reason: Diabetes complications screening
+Date: 2025-09-13

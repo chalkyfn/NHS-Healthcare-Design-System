@@ -86,6 +86,23 @@ public class Referral {
         return referredToFacility;
     }
 
+
+    public String getReferringClinicianId() {
+        return referringClinician.getClinicianId();
+    }
+
+    public String getReferredToClinicianId() {
+        return referredToClinician.getClinicianId();
+    }
+
+    public String getReferringFacilityId() {
+        return referringFacility.getFacilityId();
+    }
+
+    public String getReferredToFacilityId() {
+        return referredToFacility.getFacilityId();
+    }
+
     public String getUrgencyLevel() {
         return urgencyLevel;
     }
@@ -130,6 +147,5 @@ public class Referral {
     public Appointment getAppointment(){
         return appointment;
     }
-
 
 }
